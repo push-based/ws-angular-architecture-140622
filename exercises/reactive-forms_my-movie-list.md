@@ -42,7 +42,12 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [MyMovieListComponent],
-  imports: [MovieModule, ReactiveFormsModule, RouterModule.forChild(routes)],
+  imports: [
+    MovieModule,
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+  ],
 })
 export class MyMovieListModule {}
 ```
@@ -256,15 +261,15 @@ upsert(this.getFavorites(), movie, 'title');
 // movie.service.ts
 
 getFavorites(): (MovieModel & { comment: string })[] {
-  return JSON.parse(localStorage.getItem('my-movies')) || [];
+return JSON.parse(localStorage.getItem('my-movies')) || [];
 }
 
 upsertFavorite(movie: MovieModel & { comment: string }) {
-  const favorites = upsert(this.getFavorites(), movie, 'title');
-  localStorage.setItem('my-movies', JSON.stringify(favorites));
+const favorites = upsert(this.getFavorites(), movie, 'title');
+localStorage.setItem('my-movies', JSON.stringify(favorites));
 }
 
-```
+````
 
 </details>
 
@@ -290,7 +295,7 @@ add(): void {
     this.myMovies = this.movieService.getFavorites();
 }
 
-```
+````
 
 </details>
 
