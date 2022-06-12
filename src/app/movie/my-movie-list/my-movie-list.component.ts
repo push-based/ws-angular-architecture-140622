@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MovieService } from '../movie.service';
 
 @Component({
@@ -9,18 +9,28 @@ import { MovieService } from '../movie.service';
 })
 export class MyMovieListComponent {
   myMovieForm = new FormGroup({
-    title: new FormControl(''),
-    comment: new FormControl(''),
+    title: new FormControl('', Validators.required),
+    comment: new FormControl('', [
+      Validators.required,
+      Validators.minLength(5),
+    ]),
   });
   myMovies = this.movieService.getFavorites();
 
   constructor(private movieService: MovieService) {}
   add(): void {
-    this.movieService.upsertFavorite(this.myMovieForm.value);
-    this.reset();
-    this.myMovies = this.movieService.getFavorites();
+    if (this.myMovieForm.valid) {
+      this.movieService.upsertFavorite(this.myMovieForm.value);
+      this.reset();
+      this.myMovies = this.movieService.getFavorites();
+    } else {
+      this.myMovieForm.markAllAsTouched();
+    }
   }
-
+  showError(controlName: string): boolean {
+    const ctrl = this.myMovieForm.get(controlName);
+    return !ctrl.valid && ctrl.touched;
+  }
   reset(): void {
     this.myMovieForm.reset({
       title: '',

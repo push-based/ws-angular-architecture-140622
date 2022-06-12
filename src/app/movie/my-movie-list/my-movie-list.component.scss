@@ -38,3 +38,14 @@ form {
 .movie-title {
   width: 125px;
 }
+
+.error {
+  color: darkred;
+  font-size: var(--text-sm);
+}
+
+textarea.ng-touched.ng-invalid,
+input.ng-touched.ng-invalid {
+  border: 2px solid darkred;
+  color: darkred;
+}

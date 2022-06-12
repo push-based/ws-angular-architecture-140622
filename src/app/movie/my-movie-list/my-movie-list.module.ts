@@ -14,6 +14,11 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [MyMovieListComponent],
-  imports: [MovieModule, ReactiveFormsModule, RouterModule.forChild(routes)],
+  imports: [
+    MovieModule,
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+  ],
 })
 export class MyMovieListModule {}
