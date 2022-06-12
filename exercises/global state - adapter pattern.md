@@ -1,6 +1,6 @@
 # Global State: Adapter Pattern
 
-In this exercise we will get to know advanced architectural patterns gluing LocalState and GlobalState together to 
+In this exercise we will get to know advanced architectural patterns gluing LocalState and GlobalState together to
 ultimately decouple any state management logic from the component.
 
 ## Goal
@@ -51,12 +51,8 @@ Change the routerLinks from `'/list', 'popular'` to `'/list', 'category', 'popul
     <summary>Adjust routerLinks</summary>
 
 ```html
-
-[routerLink]="['/list', 'category', 'popular']"
-
-[routerLink]="['/list', 'category', 'top_rated']"
-
-[routerLink]="['/list', 'category', 'upcoming']"
+[routerLink]="['/list', 'category', 'popular']" [routerLink]="['/list',
+'category', 'top_rated']" [routerLink]="['/list', 'category', 'upcoming']"
 ```
 
 </details>
@@ -87,7 +83,7 @@ The Service should define a local interface with one property for `movies: TMDBM
 // movie-list-page-adapter.service.ts
 
 interface MovieListAdapterState {
-    movies: TMDBMovieModel[];
+  movies: TMDBMovieModel[];
 }
 ```
 
@@ -103,10 +99,9 @@ It should extend from `RxState` and expose `movie$: Observable<TMDBMovieModel[]>
 // movie-list-page-adapter.service.ts
 
 @Injectable()
-export class MovieListPageAdapterService extends RxState<MovieAdapterState> {
-    movies$ = this.select('movies');
+export class MovieListPageAdapterService extends RxState<MovieListAdapterState> {
+  movies$ = this.select('movies');
 }
-
 ```
 
 </details>
@@ -154,7 +149,7 @@ constructor(
     private movieState: MovieStateService,
     private activatedRoute: ActivatedRoute
 ) {
-    
+
     // constructor or create a function for it
     this.hold(this.activatedRoute.params, (params) => {
         // load category or genre based on the route type
@@ -163,13 +158,11 @@ constructor(
         } else {
             this.movieState.loadGenre(params.identifier);
         }
-    });   
+    });
 }
 ```
 
 </details>
-
-
 
 ## Provide & Use Adapter
 
@@ -188,20 +181,18 @@ You can safely remove any typescript code not connected to the `adapter`.
 // movie-list-page.component.ts
 
 @Component({
-    selector: 'movie-list-page',
-    templateUrl: './movie-list-page.component.html',
-    styleUrls: ['./movie-list-page.component.scss'],
-    providers: [MovieListPageAdapterService],
+  selector: 'movie-list-page',
+  templateUrl: './movie-list-page.component.html',
+  styleUrls: ['./movie-list-page.component.scss'],
+  providers: [MovieListPageAdapterService],
 })
 export class MovieListPageComponent {
-    movies$ = this.adapter.movies$;
-    
-    constructor(
-        private adapter: MovieListPageAdapterService
-    ) {}
-}
+  movies$ = this.adapter.movies$;
 
+  constructor(private adapter: MovieListPageAdapterService) {}
+}
 ```
+
 </details>
 
 Great, the component is beautiful!!!!!! Please serve the application and navigate between categories and genres.
