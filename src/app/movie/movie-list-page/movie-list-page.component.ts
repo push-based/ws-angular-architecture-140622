@@ -15,8 +15,8 @@ export class MovieListPageComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private movieService: MovieService
+    private movieService: MovieService,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {

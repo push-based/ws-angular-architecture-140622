@@ -19,7 +19,7 @@ go to `AppShellComponent`, use `routerLink` and setup routes to navigate between
 
 ```html
 <!-- app-shell.component.html -->
-<h3 class="navigation--headline">Discover</h3>
+<h3 class="navigation--headline">Categories</h3>
 <a
   class="navigation--link"
   [routerLink]="['/list', 'popular']"
@@ -62,13 +62,20 @@ We need to adapt our `MovieService` in order fetch different categories
 ```ts
 // movie.service.ts
 
-getMovies(category: string): Observable<{ results: MovieModel[] }> {
-    // destruct variables
-    return this.httpClient.get<{ results: MovieModel[]}>(
-        `${tmdbBaseUrl}/3/movie/${category}`
-    );
-}
-
+  getMoviesByGenre(
+    genre: TMDBMovieGenreModel['id']
+  ): Observable<TMDBMovieModel[]> {
+    return this.httpClient
+      .get<{ results: TMDBMovieModel[] }>(
+        `${this.baseUrl}/3/discover/movie`,
+        {
+          params: {
+            with_genres: genre,
+          },
+        }
+      )
+      .pipe(map(({ results }) => results));
+  }
 ```
 
 use router params in `MovieListPageComponent`
@@ -76,7 +83,9 @@ use router params in `MovieListPageComponent`
 ```ts
 // movie-list-page.component.ts
 
-movies$: Observable<{ results: MovieModel[]}>;
+movies$?: Observable<{ results: MovieModel[]}>;
+
+private sub?: Subscription;
 
 constructor(
     private movieService: MovieService,
@@ -84,11 +93,9 @@ constructor(
 ) {}
 
 ngOnInit() {
-    this.activatedRoute.params.subscribe(params => {
-        if (params.category) {
-            this.movies$ = this.movieService.getMovies(params.category);
-        }
-    })
+   this.sub = this.activatedRoute.params.subscribe((params) => {
+      this.movies$ = this.movieService.getMovieList(params.category);
+    });
 }
 ```
 
@@ -107,11 +114,11 @@ we start preparing the router config of our feature modules:
 - movie-list-page
 
 ```ts
-// not-found.module.ts
+// not-found-page.module.ts
 
 const routes: Routes = [
   {
-    path: "",
+    path: '',
     component: NotFoundComponent,
   },
 ];
@@ -122,7 +129,7 @@ const routes: Routes = [
 
 const routes: Routes = [
   {
-    path: "",
+    path: '',
     component: MovieListPageComponent,
   },
 ];
@@ -170,7 +177,7 @@ Let's try the `PreloadAllModules` preloadingStrategy.
 ```ts
 // app.module.ts
 
-[RouterModule.forRoot([], { preloadingStrategy: PreloadAllModules })];
+[RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })];
 ```
 
 After implementing the `PreloadAllModules`, repeat the process from before. You should notice all bundles being downloaded
