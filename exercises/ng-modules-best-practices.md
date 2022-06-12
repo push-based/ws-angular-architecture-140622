@@ -1,6 +1,6 @@
 # Exercise: NgModule best practices
 
-## smart module structure
+## Smart module structure
 
 Let's try to distinguish between `shared` and `feature` modules in our movies application.
 
@@ -81,7 +81,112 @@ const routes: Routes = [{
 after completing the refactoring, serve the application, enter an invalid route and see if the 404 page
 shows up.
 
-### SCAM pattern
+## Enable lazyloading for all routes
+
+Now that our module structure is in place we can start lazy loading our feature modules.
+
+we start preparing the router config of our feature modules:
+
+- not-found
+- movie-list-page
+
+```ts
+// not-found-page.module.ts
+
+const routes: Routes = [
+  {
+    path: '',
+    component: NotFoundComponent,
+  },
+];
+```
+
+```ts
+// movie-list-page.module.ts
+
+const routes: Routes = [
+  {
+    path: '',
+    component: MovieListPageComponent,
+  },
+];
+```
+
+Now that the feature modules are configured for proper lazyloading, we now can add the missing bits to the `AppRoutingModule`s
+root configuration.
+
+```ts
+// app-routing.module.ts
+
+{
+    path: 'list/:category',
+        loadChildren: () => import('./movie/movie-list-page/movie-list-page.module').then(m => m.MovieListPageModule)
+},
+// Other imports
+{
+    path: '**',
+        loadChildren: () => import('./not-found-page/not-found-page.module').then(m => m.NotFoundPageModule)
+},
+```
+
+Remove imports from the `AppModule`.
+
+serve the application, you should notice that the bundler now produces two new bundles which resemble the lazyloaded pieces of code
+we have configured with our new router configuration.
+
+```shell
+Lazy Chunk Files                                           | Names                                        |
+default-src_app_movie_movie_module_ts.js                   | movie-movie-list-page-movie-list-page-module |
+src_app_movie_movie-list-page_movie-list-page_module_ts.js | movie-movie-list-page-movie-list-page-module |
+```
+
+## Setup PreloadStrategy
+
+With the current setup, all lazy-loaded bundles will start loading as soon as you try to visit its route for the first
+time.
+We can control this behavior by using a `PreloadStrategy`.
+
+Before continuing, make sure you serve the application, open the network tab of your devtools and filter for `js` bundles.
+
+Open the browser at `http://localhost:4200/list/popular`, you should see the `movie-list-page` bundle being downloaded.
+
+Now, navigate to any invalid route and watch how the application will start downloading the `not-found-module` bundle.
+
+Let's try the `PreloadAllModules` preloadingStrategy.
+
+```ts
+// app-routing.module.ts
+
+[RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })];
+```
+
+After implementing the `PreloadAllModules`, repeat the process from before. You should notice all bundles being downloaded
+as soon as the application finished serving the main bundle.
+
+## Bonus: ngx-quicklink preloading strategy
+
+`ngx-quicklink` provides router preloading strategy which automatically downloads the lazy-loaded modules associated with all the visible links on the screen.
+
+Install `ngx-quicklink`.
+
+```bash
+npm i ngx-quicklink --save
+```
+
+Adjust app module imports and router configuration
+
+```ts
+// app.module.ts
+
+[
+  QuicklinkModule,
+  RouterModule.forRoot([], { preloadingStrategy: QuicklinkStrategy }),
+];
+```
+
+Serve the application. Now you will see that only bundles for the visible links are downloaded.
+
+## Bonus: SCAM pattern
 
 In order to prevent too heavy modules upfront, we want to make use of the so called `SCAM` pattern.
 For this we want to refactor all our components to be declared and exported by their very own `NgModule`
