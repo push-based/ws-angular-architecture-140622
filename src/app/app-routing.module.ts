@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 
 const routes: Routes = [
   {
-    path: 'list/:category',
+    path: 'list/:type/:identifier', // the former list/:category
     loadChildren: () =>
       import('./movie/movie-list-page/movie-list-page.module').then(
         (m) => m.MovieListPageModule
@@ -18,15 +17,8 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'list/genre/:id',
-    loadChildren: () =>
-      import('./movie/movie-genre-page/movie-genre-page.module').then(
-        (file) => file.MovieGenrePageModule
-      ),
-  },
-  {
     path: '',
-    redirectTo: 'list/popular',
+    redirectTo: 'list/category/popular',
     pathMatch: 'full',
   },
   {
