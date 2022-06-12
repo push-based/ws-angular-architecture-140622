@@ -1,0 +1,15 @@
+<ng-container *ngIf="movies$ | async as movieResponse; else loader">
+  <movie-list
+    *ngIf="movieResponse && movieResponse.results.length > 0; else elseTmpl"
+    [movies]="movieResponse.results"
+  >
+  </movie-list>
+
+  <ng-template #elseTmpl>
+    <div>Sorry, nothing found bra!</div>
+  </ng-template>
+</ng-container>
+
+<ng-template #loader>
+  <div class="loader"></div>
+</ng-template>

@@ -1,0 +1,39 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "outDir": "./dist/out-tsc",
+    "baseUrl": "./",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "target": "es2015",
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2020", "dom"],
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+//    "noUnusedLocals": true,
+//    "noUnusedParameters": true,
+//    "strict": true,
+//    "strictNullChecks": true
+  },
+  "exclude": ["node_modules", "tmp"],
+  "angularCompilerOptions": {
+//    "strictTemplates": true,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  },
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
