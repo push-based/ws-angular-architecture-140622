@@ -1,8 +1,15 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 
 const routes: Routes = [
+  {
+    path: 'list/:category',
+    loadChildren: () =>
+      import('./movie/movie-list-page/movie-list-page.module').then(
+        (m) => m.MovieListPageModule
+      ),
+  },
   {
     path: 'movie/:id',
     loadChildren: () =>
@@ -22,11 +29,20 @@ const routes: Routes = [
     redirectTo: 'list/popular',
     pathMatch: 'full',
   },
+  {
+    path: '**',
+    loadChildren: () =>
+      import('./not-found-page/not-found-page.module').then(
+        (m) => m.NotFoundPageModule
+      ),
+  },
 ];
 
 @NgModule({
   declarations: [],
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
