@@ -33,9 +33,9 @@ only this component needs.
 export class MovieListPageModule {}
 ```
 
-Continue by removing all occurrences of `MovieListPageComponent` from `MovieModule`, router configuration included.
+Continue by removing all occurrences of `MovieListPageComponent` from `MovieModule`, `AppRoutingModule` routes configuration.
 
-Finally, we need to re-introduce (or move) the route config to the `MovieListPageModule` and import it
+Finally, we need to re-introduce (or move) the route config to the `MovieListPageModule` **and** import it
 in the `AppModule` as we did before with the `MovieModule`.
 
 ```ts
@@ -43,23 +43,12 @@ in the `AppModule` as we did before with the `MovieModule`.
 
 const routes: Routes = [
   {
-    path: 'list/popular',
+    path: 'list/:category',
     component: MovieListPageComponent,
   },
 ];
 
 RouterModule.forChild(routes);
-```
-
-At this point in time we can also remove the import to `MovieModule` since we don't need it any longer in `AppComponent`s scope.
-
-```ts
-// app.module.ts
-
-imports: [
-  // other imports,
-  MovieListPageModule,
-];
 ```
 
 We successfully integrated our first feature module!
@@ -74,101 +63,75 @@ Continue by repeating this task for the `NotFoundComponent`.
 
 const routes: Routes = [{
   path: '**',
-  component: NotFoundComponent
+  component: NotFoundPageComponent
 }];
 
 {
-    declarations: [NotFoundComponent],
+    declarations: [NotFoundPageComponent],
     imports: [
-        RouterModule.forChild(routes),
+      SvgIconModule,
+      CommonModule,
+      RouterModule.forChild(routes),
     ]
 }
 ```
 
-> don't forget to adapt the `AppModule`
+> don't forget to adapt the `AppModule` & `AppRoutingModule`
 
 after completing the refactoring, serve the application, enter an invalid route and see if the 404 page
 shows up.
 
-### Bonus: introduce SCAM pattern everywhere
+### SCAM pattern
 
-in order to prevent too heavy modules upfront, we want to make use of the so called `SCAM` pattern.
+In order to prevent too heavy modules upfront, we want to make use of the so called `SCAM` pattern.
 For this we want to refactor all our components to be declared and exported by their very own `NgModule`
 
-`ng g m movie/movie-list`
+This opens up a migration to standalone components in Angular 14.
 
-`ng g m movie/movie-card`
+Generate module for `MovieCardComponent`.
 
-`ng g m movie/movie-image`
-
-## MovieModule `forRoot`
-
-configuring modules on root level is possible with the `forRoot` method. You have seen it before in the `AppModule`
-used for setting up the `RouterModule`.
-
-We want to introduce a `baseUrl` configuration for the `MovieService`
-
-let's start by introducing a static function `forRoot` in our `MovieModule`
-
-```ts
-// movie.module.ts
-
-static forRoot(baseUrl: string): ModuleWithProviders<MovieModule> {
-    return {
-        ngModule: MovieModule,
-        providers: [ MovieService ]
-    }
-}
+```shell
+ng g m movie/movie-card
 ```
 
-We also should turn the `MovieService` into a local service by removing the `root` scope of it
-to make sure our module provider is working.
-
-In addition, add the new `baseUrl: string` parameter to the constructor of the service
+Adjust generated module content to following:
 
 ```ts
-// movie.service.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MovieCardComponent } from './movie-card.component';
 
-@Injectable()
-export class MovieService {
-  constructor(
-    private httpClient: HttpClient,
-    private baseUrl: string // use this.baseUrl insead of `environment`
-  ) {}
-}
+@NgModule({
+  declarations: [MovieCardComponent],
+  imports: [CommonModule, StarRatingModule],
+  exports: [MovieCardComponent],
+})
+export class MovieCardModule {}
 ```
 
-now go to `AppModule` and pass the `forRoot` method of the `MovieModule`
+Remove it from `MovieModule` **and** import module instead.
+
+Generate module for `MovieImagePipe`.
+
+```shell
+ng g m movie/movie-image
+```
+
+Adjust generated module content to following:
 
 ```ts
-// app.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MovieImagePipe } from './movie-image.pipe';
 
-imports: [
-  //...
-  MovieModule.forRoot(environment.tmdbBaseUrl),
-];
+@NgModule({
+  declarations: [MovieImagePipe],
+  imports: [CommonModule],
+  exports: [MovieImagePipe],
+})
+export class MovieImageModule {}
 ```
 
-Finally, we need to pass the received value to our `MovieService`
-
-```ts
-// movie.module.ts
-
-static forRoot(baseUrl: string): ModuleWithProviders<MovieModule> {
-    return {
-        ngModule: MovieModule,
-        providers: [
-            {
-                provide: MovieService,
-                // we get the declared dependencies in `deps` as input parameters for the factory function
-                useFactory: (httpClient: HttpClient) => {
-                    return new MovieService(httpClient, baseUrl);
-                },
-                deps: [ HttpClient ] // dependencies we need from angular
-            }
-        ]
-    }
-}
-```
-
-Nice, we have made our first configurable `NgModule`! Serve the application and make sure the movie list still shows up.
+- Import module in `MovieCardModule`.
+- Replace `MoveImagePipe` with `MovieImageModule` import in `MovieModule`.
+- Add it to `MovieDetailPageModule` as well.

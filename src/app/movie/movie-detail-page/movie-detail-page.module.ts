@@ -6,6 +6,7 @@ import { SvgIconModule } from '../../ui/component/icons/icon.module';
 import { StarRatingModule } from '../../ui/pattern/star-rating/star-rating.module';
 import { MovieModule } from '../movie.module';
 import { MovieDetailPageComponent } from './movie-detail-page.component';
+import { MovieImageModule } from '../movie-image/movie-image.module';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
     DetailGridModule,
     SvgIconModule,
     MovieModule,
+    MovieImageModule,
     StarRatingModule,
   ],
 })
