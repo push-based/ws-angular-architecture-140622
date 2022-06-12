@@ -1,8 +1,9 @@
 <ng-container *ngIf="movies$ | async as movieResponse; else loader">
   <movie-list
-    *ngIf="movieResponse && movieResponse.results.length > 0; else elseTmpl"
-    [movies]="movieResponse.results"
+    *ngIf="movieResponse?.length > 0; else elseTmpl"
+    [movies]="$any(movieResponse)"
   >
+    <!--   $any because movie-list expects the outdated MovieModel   -->
   </movie-list>
 
   <ng-template #elseTmpl>

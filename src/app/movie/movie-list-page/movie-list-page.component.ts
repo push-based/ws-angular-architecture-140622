@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { MovieModel } from '../movie-model';
-import { MovieService } from '../movie.service';
+import { MovieStateService } from '../state/movie-state.service';
 
 @Component({
   selector: 'movie-list-page',
@@ -15,13 +15,13 @@ export class MovieListPageComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
 
   constructor(
-    private movieService: MovieService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private movieState: MovieStateService
   ) {}
 
   ngOnInit() {
     this.sub = this.activatedRoute.params.subscribe((params) => {
-      this.movies$ = this.movieService.getMovieList(params.category);
+      this.movieState.loadCategory(params.category);
     });
   }
 

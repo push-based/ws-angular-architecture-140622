@@ -4,6 +4,7 @@ import { distinctUntilChanged, filter, map, Subject } from 'rxjs';
 import { MovieService } from '../movie/movie.service';
 import { TMDBMovieGenreModel } from '../shared/model/movie-genre.model';
 import { RxState } from '@rx-angular/state';
+import { GenreStateService } from '../movie/state/genre-state.service';
 
 interface AppShellState {
   sideDrawerOpen: boolean;
@@ -20,13 +21,13 @@ interface AppShellState {
 export class AppShellComponent implements OnInit {
   sideDrawerOpen = false;
   viewModel$ = this.state.select();
-  readonly genres$ = this.movieService.getGenres();
+  genres$ = this.state.select('genres');
   readonly searchValue$ = new Subject<string>();
   readonly sideDrawerOpen$ = new Subject<boolean>();
   constructor(
-    private movieService: MovieService,
     private state: RxState<AppShellState>,
-    private router: Router
+    private router: Router,
+    private genreState: GenreStateService
   ) {
     this.state.set({
       genres: [],
@@ -43,7 +44,7 @@ export class AppShellComponent implements OnInit {
       map(() => false)
     );
 
-    this.state.connect('genres', this.genres$);
+    this.state.connect('genres', this.genreState.genres$);
     this.state.connect('searchValue', this.searchValue$);
     this.state.connect('sideDrawerOpen', this.sideDrawerOpen$);
     this.state.connect('sideDrawerOpen', sideDrawerOnNavigation$);

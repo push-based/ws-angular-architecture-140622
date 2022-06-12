@@ -36,6 +36,13 @@ export class MovieService {
       )
       .pipe(map(({ results }) => results));
   }
+  getMovieByCategory(category: string): Observable<TMDBMovieModel[]> {
+    const { tmdbBaseUrl: baseUrl } = environment;
+
+    return this.httpClient
+      .get<{ results: TMDBMovieModel[] }>(`${baseUrl}/3/movie/${category}`)
+      .pipe(map(({ results }) => results));
+  }
 
   getMovieCredits(id: string): Observable<TMDBMovieCreditsModel> {
     return this.httpClient.get<TMDBMovieCreditsModel>(
