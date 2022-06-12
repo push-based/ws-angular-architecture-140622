@@ -1,10 +1,9 @@
-<div class="movie-card"
-     [tilt]="40"
-     (click)="movieClicked()">
-
-  <img class="movie-image"
-       alt="Turning Red"
-       [src]="movie.poster_path | movieImage">
+<div class="movie-card" (click)="movieClicked()">
+  <img
+    class="movie-image"
+    alt="Turning Red"
+    [src]="movie.poster_path | movieImage"
+  />
 
   <div class="movie-card-content">
     <div class="movie-card-title">
