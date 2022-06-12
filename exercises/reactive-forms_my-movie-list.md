@@ -41,8 +41,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    declarations: [MyMovieListComponent],
-    imports: [MovieModule, RouterModule.forChild(routes)],
+  declarations: [MyMovieListComponent],
+  imports: [MovieModule, ReactiveFormsModule, RouterModule.forChild(routes)],
 })
 export class MyMovieListModule {}
 ```
@@ -72,16 +72,17 @@ Now we can implement the `MyMovieListComponent` itself and create our first reac
 
 Start with implementing a `FormGroup` with two `FormControls` for `title` and `comment`. We will add more fields later on.
 Also implement a `reset` method which should reset the `FormGroup` to its default value:
+
 ```ts
 {
-  title: '', 
+  title: '',
   comment: '',
 }
 ```
 
 Finally, implement a `save` method which should read the current value from the `FormGroup` and call the `reset` method afterwards
 to clean up the form after submission.
-Start by `console.log` the value. We will add more functionality afterwards. 
+Start by `console.log` the value. We will add more functionality afterwards.
 
 <details>
     <summary>Component</summary>
@@ -132,20 +133,19 @@ Have at least one button, if you go for two, mark the one as `submit` and the ot
 ```html
 <!-- my-movie-list.component.html -->
 <form [formGroup]="myMovieForm" (ngSubmit)="add()">
-    <div class="form-group">
-        <label for="title">Title</label>
-        <input id="title" type="text" formControlName="title">
-    </div>
-    <div class="form-group">
-        <label for="comment">Comment</label>
-        <textarea rows="5" id="comment" formControlName="comment"></textarea>
-    </div>
-    <div class="button-group">
-        <button class="btn" type="button" (click)="reset()">Reset</button>
-        <button class="btn primary-button" type="submit">Save</button>
-    </div>
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input id="title" type="text" formControlName="title" />
+  </div>
+  <div class="form-group">
+    <label for="comment">Comment</label>
+    <textarea rows="5" id="comment" formControlName="comment"></textarea>
+  </div>
+  <div class="button-group">
+    <button class="btn" type="button" (click)="reset()">Reset</button>
+    <button class="btn primary-button" type="submit">Save</button>
+  </div>
 </form>
-
 ```
 
 </details>
@@ -156,7 +156,6 @@ Finally, add some styles to make the UX a bit more appealing.
     <summary>Styles</summary>
 
 ```scss
-
 /* my-movie-list.component.scss */
 :host {
   padding: 0 1rem;
@@ -180,10 +179,9 @@ form {
   align-items: center;
 
   button:first-child {
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
 }
-
 ```
 
 </details>
@@ -206,21 +204,20 @@ Head to the `AppShellComponent`s template and add a new `routerLink` pointing to
 <h3 class="navigation--headline">User Menu</h3>
 
 <a
-        class="navigation--link"
-        [routerLink]="['/my-movies']"
-        routerLinkActive="active"
+  class="navigation--link"
+  [routerLink]="['/my-movies']"
+  routerLinkActive="active"
 >
-    <div class="navigation--menu-item">
-        <svg-icon class="navigation--menu-item-icon" name="account"></svg-icon>
-        My Movies
-    </div>
+  <div class="navigation--menu-item">
+    <svg-icon class="navigation--menu-item-icon" name="account"></svg-icon>
+    My Movies
+  </div>
 </a>
 ```
 
 </details>
 
 Serve the application, you should be able to navigate to the `my-movies` route via the sidebar now.
-
 
 ## Implement Service Methods
 
@@ -231,13 +228,13 @@ Since we don't have an actual endpoint, we will use the `localStorage` in order 
 some layer of persistence.
 
 Before we begin, please note we need to adjust `MovieModel` in some way in order to store the `comment` property.
-You can decide on your own how to handle it, the solution proposes the most simple approach by adding the needed 
+You can decide on your own how to handle it, the solution proposes the most simple approach by adding the needed
 properties on the fly.
 
 Implement the methods following methods in `MovieService`:
 
-* `getFavorites(): (MovieModel & { comment: string})[]` 
-* `upsertFavorite(movie: MovieModel & { comment: string })`
+- `getFavorites(): (MovieModel & { comment: string})[]`
+- `upsertFavorite(movie: MovieModel & { comment: string })`
 
 The `getFavorites()` method should simple return a `JSON.parsed` value from `localStorage.getItem('my-movies')` or an empty
 array in case of no value exists.
@@ -249,7 +246,7 @@ For the sake of simplicity, please use the helper function `upsert` from `@rx-an
 For comparison, for now we relate on the `title` property.
 
 ```ts
-upsert(this.getFavorites(), movie, 'title')
+upsert(this.getFavorites(), movie, 'title');
 ```
 
 <details>
@@ -259,14 +256,16 @@ upsert(this.getFavorites(), movie, 'title')
 // movie.service.ts
 
 getFavorites(): (MovieModel & { comment: string })[] {
-    return JSON.parse(localStorage.getItem('my-movies')) || [];
+  return JSON.parse(localStorage.getItem('my-movies')) || [];
 }
 
 upsertFavorite(movie: MovieModel & { comment: string }) {
-    const favorites = upsert(this.getFavorites(), movie, 'title');
-    localStorage.setItem('my-movies', JSON.stringify(favorites));
+  const favorites = upsert(this.getFavorites(), movie, 'title');
+  localStorage.setItem('my-movies', JSON.stringify(favorites));
 }
+
 ```
+
 </details>
 
 ## Fetch Favorite Movies from Service
@@ -311,7 +310,6 @@ Create a `div.my-movies-list`. Inside, use an `*ngFor` to create a `div.movie-it
     <span class="movie-comment">{{ movie.comment }}</span>
   </div>
 </div>
-
 ```
 
 </details>
@@ -329,7 +327,7 @@ Finally, add the styles to improve the UX.
   display: flex;
   font-size: var(--text-lg);
   align-items: center;
-  
+
   .btn {
     overflow: hidden;
   }
@@ -338,7 +336,6 @@ Finally, add the styles to improve the UX.
 .movie-title {
   width: 125px;
 }
-
 ```
 
 </details>
@@ -363,4 +360,5 @@ remove(favorites, { title: 'movie-to-delete' }, 'title');
   <svg-icon name="delete"></svg-icon>
 </button>
 ```
+
 </details>
