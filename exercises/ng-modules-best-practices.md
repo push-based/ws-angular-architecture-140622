@@ -43,7 +43,7 @@ in the `AppModule` as we did before with the `MovieModule`.
 
 const routes: Routes = [
   {
-    path: "list/popular",
+    path: 'list/popular',
     component: MovieListPageComponent,
   },
 ];
@@ -67,10 +67,10 @@ Serve the application and see if the popular movies are showing up properly.
 
 Continue by repeating this task for the `NotFoundComponent`.
 
-`ng g m not-found`
+`ng g m not-found-page`
 
 ```ts
-// not-found.module.ts
+// not-found-page.module.ts
 
 const routes: Routes = [{
   path: '**',
