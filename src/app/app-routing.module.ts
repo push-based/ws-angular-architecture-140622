@@ -17,6 +17,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'my-movies',
+    loadChildren: () =>
+      import('./movie/my-movie-list/my-movie-list.module').then(
+        (file) => file.MyMovieListModule
+      ),
+  },
+  {
     path: '',
     redirectTo: 'list/category/popular',
     pathMatch: 'full',

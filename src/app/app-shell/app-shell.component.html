@@ -16,6 +16,21 @@
       </picture>
     </a>
     <nav class="navigation">
+      <h3 class="navigation--headline">User Menu</h3>
+
+      <a
+        class="navigation--link"
+        [routerLink]="['/my-movies']"
+        routerLinkActive="active"
+      >
+        <div class="navigation--menu-item">
+          <svg-icon
+            class="navigation--menu-item-icon"
+            name="account"
+          ></svg-icon>
+          My Movies
+        </div>
+      </a>
       <h3 class="navigation--headline">Categories</h3>
 
       <a

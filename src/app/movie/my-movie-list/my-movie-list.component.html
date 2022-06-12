@@ -1,0 +1,14 @@
+<form [formGroup]="myMovieForm" (ngSubmit)="add()">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input id="title" type="text" formControlName="title" />
+  </div>
+  <div class="form-group">
+    <label for="comment">Comment</label>
+    <textarea rows="5" id="comment" formControlName="comment"></textarea>
+  </div>
+  <div class="button-group">
+    <button class="btn" type="button" (click)="reset()">Reset</button>
+    <button class="btn primary-button" type="submit">Save</button>
+  </div>
+</form>

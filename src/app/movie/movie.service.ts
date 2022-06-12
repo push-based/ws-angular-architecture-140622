@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { upsert } from '@rx-angular/state';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TMDBMovieCreditsModel } from '../shared/model/movie-credits.model';
@@ -68,5 +69,14 @@ export class MovieService {
     return this.httpClient.get<{ results: MovieModel[] }>(
       `${baseUrl}/3/movie/${category}`
     );
+  }
+
+  getFavorites(): (MovieModel & { comment: string })[] {
+    return JSON.parse(localStorage.getItem('my-movies')) || [];
+  }
+
+  upsertFavorite(movie: MovieModel & { comment: string }) {
+    const favorites = upsert(this.getFavorites(), movie, 'title');
+    localStorage.setItem('my-movies', JSON.stringify(favorites));
   }
 }
